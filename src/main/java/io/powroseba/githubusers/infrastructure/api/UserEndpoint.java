@@ -28,8 +28,17 @@ class UserEndpoint {
 
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<Error> handleIllegalArgumentException(IllegalArgumentException exception) {
-        return ResponseEntity.badRequest().body(new Error(exception.getMessage()));
+        return ResponseEntity.badRequest().body(new Error(exception));
     }
 
-    private record Error(String message) {}
+    @ExceptionHandler({UserProvider.Exception.class})
+    public ResponseEntity<Error> handleUserProviderError(UserProvider.Exception exception) {
+        return ResponseEntity.unprocessableEntity().body(new Error(exception));
+    }
+
+    private record Error(String message) {
+        public Error(Throwable throwable) {
+            this(throwable.getMessage());
+        }
+    }
 }
