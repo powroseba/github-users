@@ -1,0 +1,4 @@
+wiremock.port: 50000
+
+providers:
+  user.url: http://0.0.0.0:${wiremock.port}/users
