@@ -6,7 +6,9 @@ import io.powroseba.githubusers.domain.UserProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -28,15 +30,16 @@ class UserProviderAdapter implements UserProvider {
 
     @Override
     public Optional<User> get(Login login) {
-        return webClient.get()
+        return Optional.ofNullable(webClient.get()
                 .uri("/{login}", login.value())
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve()
                 .onStatus(status -> status.equals(HttpStatus.NOT_FOUND), this::clientError)
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), this::serverError)
                 .bodyToMono(User.class)
                 .onErrorResume(WebClientResponseException.NotFound.class, notFound -> Mono.empty())
                 .onErrorMap(WebClientResponseException.UnprocessableEntity.class, Exception::new)
-                .blockOptional();
+                .block());
     }
 
     private Mono<Throwable> clientError(ClientResponse response) {

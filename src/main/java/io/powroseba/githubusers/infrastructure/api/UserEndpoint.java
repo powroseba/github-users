@@ -2,6 +2,8 @@ package io.powroseba.githubusers.infrastructure.api;
 
 import io.powroseba.githubusers.domain.Login;
 import io.powroseba.githubusers.domain.UserProvider;
+import io.powroseba.githubusers.domain.UserService;
+import io.powroseba.githubusers.domain.UserWithCalculations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,16 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 class UserEndpoint {
 
-    private final UserProvider userProvider;
+    private final UserService userService;
 
-    UserEndpoint(UserProvider userProvider) {
-        this.userProvider = userProvider;
+    UserEndpoint(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/{login}")
-    public ResponseEntity<?> getUser(@PathVariable("login") Login login) {
-        return userProvider.get(login)
-                .map(user -> ResponseEntity.ok().build())
+    public ResponseEntity<UserWithCalculations> getUser(@PathVariable("login") Login login) {
+        return userService.get(login)
+                .map(user -> ResponseEntity.ok().body(user))
                 .orElse(ResponseEntity.notFound().build());
     }
 
