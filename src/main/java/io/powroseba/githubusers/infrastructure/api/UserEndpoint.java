@@ -1,6 +1,7 @@
 package io.powroseba.githubusers.infrastructure.api;
 
-import io.powroseba.githubusers.domain.UserLogin;
+import io.powroseba.githubusers.domain.Login;
+import io.powroseba.githubusers.domain.UserProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +11,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
-public class UserEndpoint {
+class UserEndpoint {
+
+    private final UserProvider userProvider;
+
+    UserEndpoint(UserProvider userProvider) {
+        this.userProvider = userProvider;
+    }
 
     @GetMapping("/{login}")
-    public ResponseEntity<?> getUser(@PathVariable("login") UserLogin login) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> getUser(@PathVariable("login") Login login) {
+        return userProvider.get(login)
+                .map(user -> ResponseEntity.ok().build())
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @ExceptionHandler({IllegalArgumentException.class})
