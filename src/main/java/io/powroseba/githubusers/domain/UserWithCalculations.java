@@ -3,8 +3,8 @@ package io.powroseba.githubusers.domain;
 import java.time.ZonedDateTime;
 
 public record UserWithCalculations(
-        String login,
         Long id,
+        String login,
         String name,
         String type,
         String avatarUrl,
@@ -14,8 +14,8 @@ public record UserWithCalculations(
 
     public UserWithCalculations(User user, Double calculations) {
         this(
-                user.login(),
                 user.id(),
+                user.login(),
                 user.name(),
                 user.type(),
                 user.avatarUrl(),

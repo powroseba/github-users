@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.web.reactive.server.WebTestClient
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -20,9 +21,10 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
 
     @LocalServerPort
     private int port
-
     @Autowired
     private WireMockServer wireMockServer
+    @Autowired
+    private JdbcTemplate jdbcTemplate
 
     private WebTestClient webClient
 
@@ -52,10 +54,7 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
 
 
         when:
-        def response = webClient
-                .get()
-                .uri("/users/$notExistingLogin")
-                .exchange()
+        def response = fetchUserForLogin(notExistingLogin)
 
         then:
         response.expectStatus().isNotFound()
@@ -72,10 +71,7 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
                 .tap { mock(it) }
 
         when:
-        def response = webClient
-                .get()
-                .uri("/users/$unprocessableLogin")
-                .exchange()
+        def response = fetchUserForLogin(unprocessableLogin)
 
         then:
         response.expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -106,10 +102,7 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
                 .tap { mock(it) }
 
         when:
-        def response = webClient
-                .get()
-                .uri("/users/$login")
-                .exchange()
+        def response = fetchUserForLogin(login)
 
         then:
         response.expectStatus().isEqualTo(HttpStatus.OK)
@@ -123,11 +116,59 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
         7              | 2                       || (6 / followersCount.doubleValue() * (2 + publicRepositoriesCount).doubleValue())
     }
 
+    def 'should increase counter in database for every user data request'() {
+        given:
+        final String login = "loginWithCounter"
+        final JsonNode providedUserJson = providedUserJson(
+                login: login
+        )
+
+        expect:
+        thereIsNoRequestCounterInDbForLogin(login)
+
+        and: "user provider request with user data"
+        get("/users/${login}")
+                .withHeader(HttpHeaders.ACCEPT, containing(MediaType.APPLICATION_JSON_VALUE))
+                .willReturn(aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .withStatus(200)
+                        .withJsonBody(providedUserJson))
+                .tap { mock(it) }
+
+        when:
+        def response = fetchUserForLogin(login)
+
+        then:
+        response.expectStatus().isEqualTo(HttpStatus.OK)
+        counterWasIncreasedTo(login, 1)
+
+        when:
+        def anotherResponse = fetchUserForLogin(login)
+
+        then:
+        anotherResponse.expectStatus().isEqualTo(HttpStatus.OK)
+        counterWasIncreasedTo(login, 2)
+    }
+
+    private void thereIsNoRequestCounterInDbForLogin(String login) {
+        assert jdbcTemplate.queryForList("SELECT * FROM LOGIN_REQUESTS WHERE LOGIN = ?", login).isEmpty()
+    }
+
+    private void counterWasIncreasedTo(String login, Integer expectedCounterValue) {
+        var counterValue = jdbcTemplate.queryForObject(
+                "SELECT REQUEST_COUNT FROM LOGIN_REQUESTS WHERE LOGIN = ?", Long.class, login
+        )
+        assert counterValue == expectedCounterValue
+    }
+
+    private WebTestClient.ResponseSpec fetchUserForLogin(String login) {
+        webClient
+                .get()
+                .uri("/users/$login")
+                .exchange()
+    }
+
     private void mock(MappingBuilder mappingBuilder) {
         wireMockServer.stubFor(mappingBuilder)
     }
-
-    /**
-     * should increase request counter for specific value
-     */
 }
