@@ -8,6 +8,7 @@
     <name>github-users</name>
     <description>github-users</description>
     <properties>
+        <start-class>io.powroseba.githubusers.AppRunner</start-class>
         <java.version>17</java.version>
         <h2.version>2.1.214</h2.version>
         <spock.version>2.4-M1-groovy-4.0</spock.version>
@@ -81,9 +82,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <finalName>github-users.jar</finalName>
-                    <mainClass>io.powroseba.githubusers.AppRunner</mainClass>
+                    <finalName>github-users</finalName>
+                    <layout>JAR</layout>
                 </configuration>
             </plugin>
             <plugin>
