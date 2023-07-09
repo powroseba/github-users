@@ -1,6 +1,9 @@
 package io.powroseba.githubusers.domain;
 
+import io.powroseba.githubusers.domain.calculations.Calculation;
+
 import java.time.ZonedDateTime;
+import java.util.Set;
 
 public record User(
         Long id,
@@ -23,7 +26,7 @@ public record User(
         requireNotNull(publicRepositoriesCount, "publicRepositoriesCount");
     }
 
-    public UserWithCalculations withCalculations(Double calculations) {
+    public UserWithCalculations withCalculations(Set<Calculation> calculations) {
         return new UserWithCalculations(this, calculations);
     }
 
@@ -40,6 +43,5 @@ public record User(
         }
         return value;
     }
-
 
 }

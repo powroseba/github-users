@@ -2,12 +2,15 @@ package io.powroseba.githubusers.infrastructure.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.powroseba.githubusers.domain.Login;
 import io.powroseba.githubusers.domain.User;
 import io.powroseba.githubusers.domain.UserProvider;
 import io.powroseba.githubusers.domain.UserService;
 import io.powroseba.githubusers.domain.UserWithCalculations;
+import io.powroseba.githubusers.domain.calculations.Calculation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.ZonedDateTime;
+import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/users")
@@ -56,7 +60,7 @@ class UserEndpoint {
             User user,
             @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ssZ")
             ZonedDateTime createdAt,
-            Double calculations
+            CalculationDto[] calculations
     ) {
 
         private UserDto(UserWithCalculations userWithCalculations) {
@@ -64,7 +68,27 @@ class UserEndpoint {
                     userWithCalculations.user(),
                     userWithCalculations.user().createdAt(),
                     userWithCalculations.calculations()
+                            .stream()
+                            .map(CalculationDto::new)
+                            .toArray(CalculationDto[]::new)
             );
+        }
+    }
+
+    private static class CalculationDto {
+
+        @JsonInclude(JsonInclude.Include.NON_ABSENT)
+        public final String description;
+        private final Supplier<Number> value;
+
+        private CalculationDto(Calculation calculation) {
+            this.description = calculation.description().orElse(null);
+            this.value = calculation.value();
+        }
+
+        @JsonProperty("value")
+        public Number value() {
+            return value.get();
         }
     }
 }

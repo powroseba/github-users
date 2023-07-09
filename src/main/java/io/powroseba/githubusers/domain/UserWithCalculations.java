@@ -1,3 +1,7 @@
 package io.powroseba.githubusers.domain;
 
-public record UserWithCalculations(User user, Double calculations) {}
+import io.powroseba.githubusers.domain.calculations.Calculation;
+
+import java.util.Set;
+
+public record UserWithCalculations(User user, Set<Calculation> calculations) {}
