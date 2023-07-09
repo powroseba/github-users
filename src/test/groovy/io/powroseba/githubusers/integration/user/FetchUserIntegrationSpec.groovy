@@ -3,6 +3,7 @@ package io.powroseba.githubusers.integration.user
 import com.fasterxml.jackson.databind.JsonNode
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.MappingBuilder
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import io.powroseba.githubusers.integration.BaseIntegrationSpec
 import org.hamcrest.Matchers
 import org.springframework.beans.factory.annotation.Autowired
@@ -49,7 +50,7 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
 
         and: 'user provider request return not found status'
         get("/users/${login}")
-                .willReturn(aResponse().withStatus(404))
+                .willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value()))
                 .tap { mock(it) }
 
 
@@ -93,10 +94,7 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
         and: "user provider request with invalid user data"
         get("/users/${login}")
                 .withHeader(HttpHeaders.ACCEPT, containing(MediaType.APPLICATION_JSON_VALUE))
-                .willReturn(aResponse()
-                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .withStatus(200)
-                        .withJsonBody(providedUserJson))
+                .willReturn(responseWithBody(providedUserJson))
                 .tap { mock(it) }
 
         when:
@@ -138,10 +136,7 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
         and: "user provider request with user data"
         get("/users/${login}")
                 .withHeader(HttpHeaders.ACCEPT, containing(MediaType.APPLICATION_JSON_VALUE))
-                .willReturn(aResponse()
-                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .withStatus(200)
-                        .withJsonBody(providedUserJson))
+                .willReturn(responseWithBody(providedUserJson))
                 .tap { mock(it) }
 
         when:
@@ -166,10 +161,7 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
         and: "user provider request with user data"
         get("/users/${login}")
                 .withHeader(HttpHeaders.ACCEPT, containing(MediaType.APPLICATION_JSON_VALUE))
-                .willReturn(aResponse()
-                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .withStatus(200)
-                        .withJsonBody(providedUserJson))
+                .willReturn(responseWithBody(providedUserJson))
                 .tap { mock(it) }
 
         when:
@@ -207,5 +199,12 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
 
     private void mock(MappingBuilder mappingBuilder) {
         wireMockServer.stubFor(mappingBuilder)
+    }
+
+    private ResponseDefinitionBuilder responseWithBody(JsonNode providedUserJson) {
+        return aResponse()
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withJsonBody(providedUserJson)
     }
 }
