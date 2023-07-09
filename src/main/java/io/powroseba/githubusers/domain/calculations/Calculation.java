@@ -8,9 +8,9 @@ import java.util.function.Supplier;
 
 public abstract class Calculation {
 
-    protected final Supplier<User> user;
+    protected final Supplier<User.Properties> user;
 
-    protected Calculation(Supplier<User> user) {
+    protected Calculation(Supplier<User.Properties> user) {
         this.user = user;
     }
 
@@ -22,5 +22,5 @@ public abstract class Calculation {
         return () -> equation().apply(user.get());
     }
 
-    protected abstract Function<User, Number> equation();
+    protected abstract Function<User.Properties, Number> equation();
 }

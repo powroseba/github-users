@@ -14,18 +14,19 @@ class UserServiceImpl implements UserService {
     private final UserProvider userProvider;
     private final CalculationsFactory calculationsFactory;
 
-    public UserServiceImpl(UserProvider userProvider, CalculationsFactory calculationsFactory) {
+    UserServiceImpl(UserProvider userProvider, CalculationsFactory calculationsFactory) {
         this.userProvider = userProvider;
         this.calculationsFactory = calculationsFactory;
     }
 
-    public Optional<UserWithCalculations> get(Login login) {
-        log.info("Fetching user with login {}", login.value());
+    @Override
+    public Optional<User.UserWithCalculations> get(User.Login login) {
+        log.info("Fetching user with loginAsString {}", login.value());
         return userProvider.get(login)
                 .map(this::addCalculations);
     }
 
-    private UserWithCalculations addCalculations(User user) {
+    private User.UserWithCalculations addCalculations(User.Properties user) {
         return user.withCalculations(calculationsFactory.calculations(user));
     }
 }

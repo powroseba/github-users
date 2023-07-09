@@ -1,5 +1,6 @@
 package io.powroseba.githubusers.domain.calculations
 
+
 import io.powroseba.githubusers.domain.User
 import io.powroseba.githubusers.domain.fixture.UserFixture
 import spock.lang.Specification
@@ -27,7 +28,7 @@ class EmpikCalculationSpec extends Specification {
         0d          | 10d
     }
 
-    private User user(Double followers, Double publicRepositoriesCount) {
+    private User.Properties user(Double followers, Double publicRepositoriesCount) {
         return UserFixture.user([
                 followersCount: followers,
                 publicRepositoriesCount: publicRepositoriesCount

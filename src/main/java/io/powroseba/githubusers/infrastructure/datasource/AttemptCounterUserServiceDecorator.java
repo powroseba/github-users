@@ -1,8 +1,7 @@
 package io.powroseba.githubusers.infrastructure.datasource;
 
-import io.powroseba.githubusers.domain.Login;
+import io.powroseba.githubusers.domain.User;
 import io.powroseba.githubusers.domain.UserService;
-import io.powroseba.githubusers.domain.UserWithCalculations;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -27,13 +26,13 @@ class AttemptCounterUserServiceDecorator implements UserService {
 
     @Transactional
     @Override
-    public Optional<UserWithCalculations> get(Login login) {
+    public Optional<User.UserWithCalculations> get(User.Login login) {
         var result = userService.get(login);
         increaseCounter(login);
         return result;
     }
 
-    private void increaseCounter(Login login) {
+    private void increaseCounter(User.Login login) {
         var result = jdbcTemplate.update(UPDATE_COUNTER, login.value());
         if (result == 0) {
             jdbcTemplate.update(INSERT_COUNTER, login.value());

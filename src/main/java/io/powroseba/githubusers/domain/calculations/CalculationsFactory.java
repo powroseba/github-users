@@ -6,5 +6,5 @@ import java.util.Set;
 
 public interface CalculationsFactory {
 
-    Set<Calculation> calculations(User user);
+    Set<Calculation> calculations(User.Properties user);
 }

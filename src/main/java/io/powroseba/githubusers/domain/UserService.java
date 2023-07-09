@@ -4,5 +4,5 @@ import java.util.Optional;
 
 public interface UserService {
 
-    Optional<UserWithCalculations> get(Login login);
+    Optional<User.UserWithCalculations> get(User.Login login);
 }

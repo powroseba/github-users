@@ -1,5 +1,6 @@
 package io.powroseba.githubusers.domain.calculations
 
+
 import io.powroseba.githubusers.domain.User
 import io.powroseba.githubusers.domain.fixture.UserFixture
 import spock.lang.Specification
@@ -23,7 +24,7 @@ class AllCodeSourcesCountCalculationSpec extends Specification {
         10                      | 123
     }
 
-    private User user(Long publicRepositoriesCount, Long publicGists) {
+    private User.Properties user(Long publicRepositoriesCount, Long publicGists) {
         return UserFixture.user([
                 publicRepositoriesCount: publicRepositoriesCount,
                 publicGistsCount: publicGists

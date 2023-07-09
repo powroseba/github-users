@@ -1,7 +1,6 @@
 package io.powroseba.githubusers.infrastructure.userprovider;
 
 import io.netty.handler.logging.LogLevel;
-import io.powroseba.githubusers.domain.Login;
 import io.powroseba.githubusers.domain.User;
 import io.powroseba.githubusers.domain.UserProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +38,7 @@ class UserProviderAdapter implements UserProvider {
     }
 
     @Override
-    public Optional<User> get(Login login) {
+    public Optional<User.Properties> get(User.Login login) {
         return webClient.get()
                 .uri("/{login}", login.value())
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -83,10 +82,10 @@ class UserProviderAdapter implements UserProvider {
             Integer public_gists
     ) {
 
-        private User toUser() {
-            return new User(
+        private User.Properties toUser() {
+            return new User.Properties(
                     id,
-                    login,
+                    new User.Login(login),
                     name,
                     type,
                     avatar_url,

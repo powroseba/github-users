@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 class AllCodeSourcesCountCalculation extends Calculation {
 
-    protected AllCodeSourcesCountCalculation(Supplier<User> user) {
+    protected AllCodeSourcesCountCalculation(Supplier<User.Properties> user) {
         super(user);
     }
 
@@ -18,7 +18,7 @@ class AllCodeSourcesCountCalculation extends Calculation {
     }
 
     @Override
-    protected Function<User, Number> equation() {
+    protected Function<User.Properties, Number> equation() {
         return user -> user.publicRepositoriesCount() + user.publicGistsCount();
     }
 }

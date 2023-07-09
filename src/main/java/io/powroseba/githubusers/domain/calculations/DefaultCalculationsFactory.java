@@ -9,7 +9,7 @@ import java.util.Set;
 class DefaultCalculationsFactory implements CalculationsFactory {
 
     @Override
-    public Set<Calculation> calculations(User user) {
+    public Set<Calculation> calculations(User.Properties user) {
         return Set.of(
                 new EmpikCalculation(() -> user),
                 new AllCodeSourcesCountCalculation(() -> user)

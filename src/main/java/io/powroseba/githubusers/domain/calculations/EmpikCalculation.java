@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 class EmpikCalculation extends Calculation {
 
-    EmpikCalculation(Supplier<User> user) {
+    EmpikCalculation(Supplier<User.Properties> user) {
         super(user);
     }
 
@@ -18,7 +18,7 @@ class EmpikCalculation extends Calculation {
     }
 
     @Override
-    public Function<User, Number> equation() {
+    public Function<User.Properties, Number> equation() {
         return user -> {
             final Double followers = user.followersCount().doubleValue();
             if (followers.equals(0d)) {
