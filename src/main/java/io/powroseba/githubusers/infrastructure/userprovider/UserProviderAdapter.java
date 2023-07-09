@@ -78,8 +78,9 @@ class UserProviderAdapter implements UserProvider {
             String type,
             String avatar_url,
             ZonedDateTime created_at,
-            Long followers,
-            Long public_repos
+            Integer followers,
+            Integer public_repos,
+            Integer public_gists
     ) {
 
         private User toUser() {
@@ -91,7 +92,8 @@ class UserProviderAdapter implements UserProvider {
                     avatar_url,
                     created_at,
                     followers,
-                    public_repos
+                    public_repos,
+                    public_gists
             );
         }
     }

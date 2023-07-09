@@ -56,7 +56,7 @@ class UserEndpoint {
 
     private record UserDto(
             @JsonUnwrapped
-            @JsonIgnoreProperties(value = {"followersCount", "publicRepositoriesCount", "createdAt"})
+            @JsonIgnoreProperties(value = {"followersCount", "publicRepositoriesCount", "createdAt", "publicGistsCount"})
             User user,
             @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ssZ")
             ZonedDateTime createdAt,

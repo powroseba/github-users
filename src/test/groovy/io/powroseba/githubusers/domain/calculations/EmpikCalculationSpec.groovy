@@ -1,9 +1,8 @@
 package io.powroseba.githubusers.domain.calculations
 
 import io.powroseba.githubusers.domain.User
+import io.powroseba.githubusers.domain.fixture.UserFixture
 import spock.lang.Specification
-
-import java.time.ZonedDateTime
 
 class EmpikCalculationSpec extends Specification {
 
@@ -29,9 +28,9 @@ class EmpikCalculationSpec extends Specification {
     }
 
     private User user(Double followers, Double publicRepositoriesCount) {
-        return new User(
-                1, "_", "_", "_", "_", ZonedDateTime.now(),
-                followers.longValue(), publicRepositoriesCount.longValue()
-        )
+        return UserFixture.user([
+                followersCount: followers,
+                publicRepositoriesCount: publicRepositoriesCount
+        ])
     }
 }

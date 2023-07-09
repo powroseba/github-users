@@ -12,8 +12,10 @@ public record User(
         String type,
         String avatarUrl,
         ZonedDateTime createdAt,
-        Long followersCount,
-        Long publicRepositoriesCount) {
+        Integer followersCount,
+        Integer publicRepositoriesCount,
+        Integer publicGistsCount
+) {
 
     public User {
         requireNotNull(id, "id");
@@ -24,6 +26,7 @@ public record User(
         requireNotNull(createdAt, "createdAt");
         requireNotNull(followersCount, "followersCount");
         requireNotNull(publicRepositoriesCount, "publicRepositoriesCount");
+        requireNotNull(publicGistsCount, "publicGistsCount");
     }
 
     public UserWithCalculations withCalculations(Set<Calculation> calculations) {
