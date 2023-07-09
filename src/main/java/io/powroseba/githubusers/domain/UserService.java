@@ -17,11 +17,11 @@ public class UserService {
     public Optional<UserWithCalculations> get(Login login) {
         log.info("Fetching user with login {}", login.value());
         return userProvider.get(login)
-                .map(this::toUserWithCalculations);
+                .map(this::addCalculations);
     }
 
-    private UserWithCalculations toUserWithCalculations(User user) {
-        return new UserWithCalculations(user, calculation(user));
+    private UserWithCalculations addCalculations(User user) {
+        return user.withCalculations(calculation(user));
     }
 
     private Double calculation(User user) {

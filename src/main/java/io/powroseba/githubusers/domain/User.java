@@ -11,4 +11,8 @@ public record User(
         ZonedDateTime createdAt,
         Long followersCount,
         Long publicRepositoriesCount) {
+
+    public UserWithCalculations withCalculations(Double calculations) {
+        return new UserWithCalculations(this, calculations);
+    }
 }
