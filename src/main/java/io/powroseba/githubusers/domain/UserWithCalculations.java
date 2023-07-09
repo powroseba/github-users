@@ -23,4 +23,8 @@ public record UserWithCalculations(
                 calculations
         );
     }
+
+    public User user() {
+        return new User(id, login, name, type, avatarUrl, createdAt, 1L, null);
+    }
 }
