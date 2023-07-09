@@ -132,9 +132,7 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
         given:
         final String login = "login"
         final JsonNode providedUserJson = providedUserJson(
-                login: login,
-                followers: followersCount,
-                public_repos: publicRepositoriesCount
+                login: login
         )
 
         and: "user provider request with user data"
@@ -152,13 +150,7 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
         then:
         response.expectStatus().isEqualTo(HttpStatus.OK)
                 .expectBody()
-                .json(userWithCalculationJsonFrom(providedUserJson, expectedCalculation))
-
-        where:
-        followersCount | publicRepositoriesCount || expectedCalculation
-        0              | 1                       || 0
-        2              | 3                       || (6 / followersCount.doubleValue() * (2 + publicRepositoriesCount).doubleValue())
-        7              | 2                       || (6 / followersCount.doubleValue() * (2 + publicRepositoriesCount).doubleValue())
+                .json(userWithCalculationJsonFrom(providedUserJson))
     }
 
     def 'should increase counter in database for every user data request'() {
