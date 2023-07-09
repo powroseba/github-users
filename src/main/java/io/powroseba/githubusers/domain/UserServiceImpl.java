@@ -28,11 +28,4 @@ class UserServiceImpl implements UserService {
     private UserWithCalculations addCalculations(User user) {
         return user.withCalculations(calculationsFactory.calculations(user));
     }
-
-    private Double calculation(User user) {
-        if (user.followersCount().equals(0L)) {
-            return 0d;
-        }
-        return 6 / user.followersCount().doubleValue() * (2 + user.publicRepositoriesCount().doubleValue());
-    }
 }

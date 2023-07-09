@@ -19,7 +19,8 @@ trait UserJsonFixture {
                 "avatar_url"    : "http://avatar.url",
                 "created_at"    : "2011-01-25T18:44:36Z",
                 "public_repos"  : 2,
-                "followers"     : 3
+                "followers"     : 3,
+                "public_gists"  : 3
         ]
         return jsonMapper.convertValue(defaultValues + params, JsonNode.class)
     }
@@ -39,6 +40,10 @@ trait UserJsonFixture {
                             [
                                     description : 'Empik calculation',
                                     value       : 6 / sourceJsonNode.get('followers').doubleValue() * (2 + sourceJsonNode.get('public_repos').doubleValue())
+                            ],
+                            [
+                                    description : 'All code sources count',
+                                    value       : sourceJsonNode.get('public_repos').numberValue() + sourceJsonNode.get('public_gists').numberValue()
                             ]
                     ]
         ]

@@ -11,7 +11,8 @@ class DefaultCalculationsFactory implements CalculationsFactory {
     @Override
     public Set<Calculation> calculations(User user) {
         return Set.of(
-                new EmpikCalculation(() -> user)
+                new EmpikCalculation(() -> user),
+                new AllCodeSourcesCountCalculation(() -> user)
         );
     }
 }
