@@ -45,33 +45,33 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
 
     def 'should return not found when requested user does not exist'() {
         given:
-        final String notExistingLogin = "notExistingLogin"
+        final String login = "notExistingLogin"
 
         and: 'user provider request return not found status'
-        get("/users/${notExistingLogin}")
+        get("/users/${login}")
                 .willReturn(aResponse().withStatus(404))
                 .tap { mock(it) }
 
 
         when:
-        def response = fetchUserForLogin(notExistingLogin)
+        def response = fetchUserForLogin(login)
 
         then:
         response.expectStatus().isNotFound()
     }
 
-    def 'should return unprocessable entity when provider request failed '() {
+    def 'should return unprocessable entity when provider request failed'() {
         given:
-        final String unprocessableLogin = "unprocessableLogin"
+        final String login = "unprocessableLogin"
 
         and:
         "user provider request failed with status ${status}"
-        get("/users/${unprocessableLogin}")
+        get("/users/${login}")
                 .willReturn(aResponse().withStatus(status.value()))
                 .tap { mock(it) }
 
         when:
-        def response = fetchUserForLogin(unprocessableLogin)
+        def response = fetchUserForLogin(login)
 
         then:
         response.expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -81,6 +81,51 @@ class FetchUserIntegrationSpec extends BaseIntegrationSpec implements UserJsonFi
                 HttpStatus.BAD_REQUEST,
                 HttpStatus.INTERNAL_SERVER_ERROR,
         ]
+    }
+
+    def 'should return unprocessable entity when provider return invalid data'() {
+        given:
+        final String login = "unprocessableLogin-invalidData"
+        final JsonNode providedUserJson = providedUserJson(
+                [login: login] + invalidParam
+        )
+
+        and: "user provider request with invalid user data"
+        get("/users/${login}")
+                .withHeader(HttpHeaders.ACCEPT, containing(MediaType.APPLICATION_JSON_VALUE))
+                .willReturn(aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .withStatus(200)
+                        .withJsonBody(providedUserJson))
+                .tap { mock(it) }
+
+        when:
+        def response = fetchUserForLogin(login)
+
+        then:
+        response.expectStatus()
+                .isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+                .expectBody()
+                .jsonPath('message').value(Matchers.is(expectedMessage))
+
+        where:
+        invalidParam         || expectedMessage
+        [id: null]           || "id is required"
+        [login: null]        || "login is required"
+        [login: ""]          || "login is required"
+        [login: "  "]        || "login is required"
+        [name: null]         || "name is required"
+        [name: ""]           || "name is required"
+        [name: "  "]         || "name is required"
+        [type: null]         || "type is required"
+        [type: ""]           || "type is required"
+        [type: " "]          || "type is required"
+        [avatar_url: null]   || "avatarUrl is required"
+        [avatar_url: ""]     || "avatarUrl is required"
+        [avatar_url: "  "]   || "avatarUrl is required"
+        [created_at: null]   || "createdAt is required"
+        [followers: null]    || "followersCount is required"
+        [public_repos: null] || "publicRepositoriesCount is required"
     }
 
     def 'should return user data with calculations'() {

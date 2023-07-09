@@ -11,17 +11,17 @@ trait UserJsonFixture {
     private final ObjectMapper jsonMapper = new ObjectMapper()
 
     JsonNode providedUserJson(Map<String, Object> params = [:]) {
-        def jsonProperties = [
-                    "id": params.id ?: 123,
-                    "login": params.login ?: "login",
-                    "name": params.name ?: "Login name",
-                    "type": "User",
-                    "avatar_url": params.avatar_url ?: "http://avatar.url",
-                    "created_at": params.created_at ?: "2011-01-25T18:44:36Z",
-                    "public_repos": params.public_repos ?: 0,
-                    "followers": params.followers ?: 0
+        def defaultValues = [
+                "id": 123,
+                "login": "login",
+                "name": "Login name",
+                "type": "User",
+                "avatar_url": "http://avatar.url",
+                "created_at": "2011-01-25T18:44:36Z",
+                "public_repos": 0,
+                "followers": 0
         ]
-        return jsonMapper.convertValue(jsonProperties, JsonNode.class)
+        return jsonMapper.convertValue(defaultValues + params, JsonNode.class)
     }
 
     String userWithCalculationJsonFrom(JsonNode sourceJsonNode, Double expectedCalculation) {

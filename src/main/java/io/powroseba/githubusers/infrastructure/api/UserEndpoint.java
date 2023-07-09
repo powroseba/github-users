@@ -40,11 +40,10 @@ class UserEndpoint {
         return ResponseEntity.badRequest().body(new Error(exception));
     }
 
-    @ExceptionHandler({UserProvider.Exception.class})
-    public ResponseEntity<Error> handleUserProviderError(UserProvider.Exception exception) {
+    @ExceptionHandler({UserProvider.Exception.class, IllegalStateException.class})
+    public ResponseEntity<Error> handleUserProviderError(RuntimeException exception) {
         return ResponseEntity.unprocessableEntity().body(new Error(exception));
     }
-
     private record Error(String message) {
         public Error(Throwable throwable) {
             this(throwable.getMessage());

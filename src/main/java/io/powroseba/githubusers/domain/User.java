@@ -12,7 +12,34 @@ public record User(
         Long followersCount,
         Long publicRepositoriesCount) {
 
+    public User {
+        requireNotNull(id, "id");
+        requireNotBlank(login, "login");
+        requireNotBlank(name, "name");
+        requireNotBlank(type, "type");
+        requireNotBlank(avatarUrl, "avatarUrl");
+        requireNotNull(createdAt, "createdAt");
+        requireNotNull(followersCount, "followersCount");
+        requireNotNull(publicRepositoriesCount, "publicRepositoriesCount");
+    }
+
     public UserWithCalculations withCalculations(Double calculations) {
         return new UserWithCalculations(this, calculations);
     }
+
+    private <T> T requireNotNull(T value, String propertyName) {
+        if (value == null) {
+            throw new IllegalStateException(propertyName + " is required");
+        }
+        return value;
+    }
+
+    private String requireNotBlank(String value, String propertyName) {
+        if (requireNotNull(value, propertyName).isBlank()) {
+            throw new IllegalStateException(propertyName + " is required");
+        }
+        return value;
+    }
+
+
 }
