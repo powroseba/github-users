@@ -20,3 +20,7 @@ spring:
 
 providers:
   user.url: https://api.github.com/users
+
+logging:
+  level:
+    io.powroseba.githubusers: DEBUG
